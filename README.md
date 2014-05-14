@@ -5,4 +5,7 @@ Controller of a Lynx robotic arm (SSC 32)
 
 A back up copy
 
-Next step: A python GUI
+Done: ROS service + ROS client, GUI
+
+Next step: Better GUI controller(record actions, control multiple servos, custom actions)
+
