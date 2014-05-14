@@ -7,6 +7,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <string>
+#include <sstream>
 int fd;
 
 bool send(arm_controller::Move::Request  &req,
@@ -14,14 +15,17 @@ bool send(arm_controller::Move::Request  &req,
 {
   res.response = "Received";
   ROS_INFO("sending command: [Index: %ld, Position:%ld, Speed: %ld]", req.index, req.position, req.speed);
-  //ROS_INFO("sending back response: [ " + res.response + "]");
-  std::string input = "#" + std::to_string(req.index) + " P" + std::to_string(req.position) + " S" + std::to_string(req.speed);
   
+  std::stringstream input;
+  input << "#" << req.index << " P" << req.position << " S" << req.speed;
   // Turn string into commands
-  const char *cInput = input.c_str();
+
+  const char *cInput = input.str().c_str();
   int length = strlen(cInput);
-  cInput[length - 1] = '\r';
-  int written = write(fd, cInput, length);
+  char *buff = strndup(cInput, length); 
+  buff[length - 1] = '\r';
+  int written = write(fd, buff, length);
+  free(buff);
   return true;
 }
 
@@ -32,7 +36,6 @@ void setup() {
 
   if (fd == -1) {
     ROS_INFO("fd error");
-    return -1;
   }
   tcgetattr(fd, &options);
   cfsetospeed(&options, B115200);
@@ -44,20 +47,17 @@ void setup() {
 
   if (tcsetattr(fd, TCSANOW, &options) != 0) {
     ROS_INFO("apply setting error");
-    return -1;
   }
 }
 
 int main(int argc, char **argv)
-{ 
-  
-  ros::init(argc, argv, "arm_controller_server"); 
-  setup();
+{
+  ros::init(argc, argv, "arm_controller_server");
+  setup(); // Set up all the attributes
   ros::NodeHandle n;
-  ros::ServiceServer service = n.advertiseService("arm_controller", send); // Get parameter
+  ros::ServiceServer service = n.advertiseService("arm_controller", send);
   ROS_INFO("Ready to perform actions");
   ros::spin();
 
-  close(fd);
   return 0;
 }

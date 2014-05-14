@@ -4,10 +4,10 @@
 
 int main(int argc, char **argv)
 {
-  ros::init(argc, argv, "arm_controller_server");
-  if (argc != 3)
+  ros::init(argc, argv, "arm_controller_client");
+  if (argc != 4)
   {
-    ROS_INFO("usage: lynx_service_client Position Speed"); // #0 P1000 S500
+    ROS_INFO("usage: arm_controller_client [ServoIndex] [Position] [Speed]"); // #0 P1000 S500
     return 1;
   }
 
@@ -18,6 +18,7 @@ int main(int argc, char **argv)
   srv.request.index = atoll(argv[1]);
   srv.request.position = atoll(argv[2]);
   srv.request.speed = atoll(argv[3]);
+  ROS_INFO("Before calling");
   if (client.call(srv))
   {
     ROS_INFO(("response: " + srv.response.response).c_str());
