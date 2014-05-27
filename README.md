@@ -5,7 +5,7 @@ Controller of a Lynx robotic arm (SSC 32)
 
 A back up copy
 
-Done: ROS service + ROS client, GUI, smooth responsive(non-blocking call back)
+Done: ROS service + ROS client, GUI, smooth responsive(non-blocking serial command sending)
 
 Next step: NOPE, it's done:)
 
